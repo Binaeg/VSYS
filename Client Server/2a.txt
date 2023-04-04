@@ -1,0 +1,3 @@
+Lags
+- geringere Bandbreite als Datenmenge
+-
