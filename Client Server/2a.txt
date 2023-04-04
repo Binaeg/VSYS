@@ -1,3 +1,4 @@
 Lags
-- geringere Bandbreite als Datenmenge
--
+- geringere Bandbreite als Datenmenge benötigt (Paketverlust)
+- Server hat weniger Ressourcen als benötigt werden (Systemauslastung)
+- Inneffizienter Primzahl Algorithmus
