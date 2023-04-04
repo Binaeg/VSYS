@@ -14,24 +14,56 @@ public class PrimeClient {
     private static final String CLIENT_NAME=PrimeClient.class.getName();
     private static final boolean REQUESTMODE = true;
 
+    private static final boolean MULTI_THREADING = true;
+
     private Component communication;
     String hostname;
     int port;
     long initialValue,count;
-
     boolean requestMode;
+    boolean multiThreading;
 
-    public PrimeClient(String hostname,int port,long initialValue,long count, boolean requestMode) {
+    public PrimeClient(String hostname,int port,long initialValue,long count, boolean requestMode, boolean multiThreading) {
         this.hostname=hostname;
         this.port=port;
         this.initialValue=initialValue;
         this.count=count;
         this.requestMode=requestMode;
+        this.multiThreading=multiThreading;
     }
 
-    public void run() throws ClassNotFoundException, IOException {
+    public void execute() throws IOException {
         communication=new Component();
-        for (long i=initialValue;i<initialValue+count;i++) processNumber(i);
+        if (multiThreading) {
+            for (long i=initialValue;i<initialValue+count;i++) {
+                // create thread for every number i
+                new PrimeThread(i, communication, hostname, port).start();
+            }
+        } else {
+            for (long i=initialValue;i<initialValue+count;i++) processNumber(i);
+        }
+    }
+
+    public static synchronized void processNumberSync(long value, String hostname, int port, Component communication) throws IOException {
+        communication.send(new Message(hostname, port, new Long(value)), false);
+        Boolean isPrime = false;
+        Boolean received = false;
+        System.out.print(value + ": ");
+        while (!received) {
+            try {
+                sleep(250);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                isPrime = (Boolean) communication.receive(port, true, true).getContent();
+                received = true;
+            } catch (Exception e) {
+                System.out.print(".");
+            }
+        }
+
+        System.out.println((isPrime.booleanValue() ? " prime" : " not prime"));
     }
 
     public void processNumber(long value) throws IOException {
@@ -62,6 +94,7 @@ public class PrimeClient {
         long initialValue=INITIAL_VALUE;
         long count=COUNT;
         boolean requestMode=REQUESTMODE;
+        boolean multiThreading=MULTI_THREADING;
 
         boolean doExit=false;
 
@@ -79,12 +112,20 @@ public class PrimeClient {
             input=reader.readLine();
             if(!input.equals("")) port=Integer.parseInt(input);
 
-            System.out.print("Requestmode non-blocking? y|n [yes] > ");
+            System.out.print("Requestmode non-blocking? y|n [n] > ");
             input=reader.readLine();
-            if(!input.equals("y")) {
-                requestMode=false;
-            } else {
+            if(input.equals("y")) {
                 requestMode=true;
+            } else {
+                requestMode=false;
+            }
+
+            System.out.print("Multi Threading? y|n [n] > ");
+            input=reader.readLine();
+            if (input.equals("y")) {
+                multiThreading=true;
+            } else {
+                multiThreading=false;
             }
 
             System.out.print("Prime search initial value ["+initialValue+"] > ");
@@ -95,7 +136,8 @@ public class PrimeClient {
             input=reader.readLine();
             if(!input.equals("")) count=Integer.parseInt(input);
 
-            new PrimeClient(hostname,port,initialValue,count,requestMode).run();
+
+            new PrimeClient(hostname,port,initialValue,count,requestMode,multiThreading).execute();
 
             System.out.println("Exit [n]> ");
             input=reader.readLine();
