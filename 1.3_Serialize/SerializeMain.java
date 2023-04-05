@@ -7,8 +7,8 @@ public class SerializeMain {
 	public static void main(String args[]) throws IOException, ClassNotFoundException {
 		String command,text="";
 		boolean doExit=false;
-		
-		myObject=new MySerializableClass();
+
+		myObject=new MySerializableClass(new MyNonSerializableClass());
 		mySerializer=new MySerializer(myObject);
 		
 		BufferedReader reader=new BufferedReader(new InputStreamReader(System.in )); 

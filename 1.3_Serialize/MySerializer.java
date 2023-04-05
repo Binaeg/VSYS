@@ -17,20 +17,25 @@ public class MySerializer {
 		return filename;
 	}
 	
-	public void write(String text) throws IOException {
+	public void write(String text) {
 		mySerializableClass.set(text);
-		String filename=readFilename();
-		
-		// Implementierung erforderlich
-		// Serialisiere mySerializableClass in Datei
+		try {
+			String filename = readFilename();
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
+			oos.writeObject(mySerializableClass);
+			oos.close();
+		} catch (Exception e) {
+			System.out.println("Fehler");
+		}
 		
 	}
 	
 	public String read() throws IOException, ClassNotFoundException {
 		String filename=readFilename();
-		
-		// Implementierung erforderlich
-		// Serialisiere mySerializableClass von Datei
+
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+		mySerializableClass = (MySerializableClass)ois.readObject();
+		ois.close();
 		
 		return mySerializableClass.toString();
 	}
