@@ -78,6 +78,7 @@ public class PrimeClient {
                 throw new RuntimeException(e);
             }
             try {
+                // better: null check -> performance
                 isPrime = (Boolean) communication.receive(port, requestMode, true).getContent();
                 received = true;
             } catch (Exception e) {
