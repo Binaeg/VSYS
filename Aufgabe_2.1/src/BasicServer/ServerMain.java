@@ -1,3 +1,5 @@
+package BasicServer;
+
 import java.io.*;
  
 public class ServerMain {
