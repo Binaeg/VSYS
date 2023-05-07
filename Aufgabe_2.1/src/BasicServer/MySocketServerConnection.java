@@ -7,6 +7,8 @@ public class MySocketServerConnection extends Thread {
     private Socket socket;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
+    private String name;
+    static private int connectionCounter = 0;
 
     public MySocketServerConnection(Socket socket)
             throws IOException {
@@ -16,6 +18,7 @@ public class MySocketServerConnection extends Thread {
         objectInputStream =
                 new ObjectInputStream(socket.getInputStream());
         System.out.println("Server: incoming connection accepted.");
+        name = "connection-" + connectionCounter++;
     }
 
     public void run() {
@@ -24,7 +27,7 @@ public class MySocketServerConnection extends Thread {
             while (true) {
                 System.out.println("Server: waiting for message ...");
                 String string = (String) objectInputStream.readObject();
-                System.out.println("Server: received '" + string + "' from " + socket.getLocalSocketAddress());
+                System.out.println("Server: received '" + string + "' from " + socket.getLocalSocketAddress() + " " + name);
                 objectOutputStream.writeObject("server received " + string);
 
                 if (string.equals("exit")) {
