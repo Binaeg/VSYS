@@ -4,7 +4,7 @@ import java.util.logging.*;
 import rm.requestResponse.*;
 
 public class PrimeServer {
-	private final static int PORT=1234;
+	private final static int PORT=9090;
 	private final static Logger LOGGER=Logger.getLogger(PrimeServer.class.getName());
 	
 	private Component communication;
