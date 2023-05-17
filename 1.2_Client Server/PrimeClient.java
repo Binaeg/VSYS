@@ -8,7 +8,7 @@ import static java.lang.Thread.sleep;
 
 public class PrimeClient {
     private static final String HOSTNAME="localhost";
-    private static final int PORT=1234;
+    private static final int PORT=9090;
     private static final long INITIAL_VALUE=(long)1e17;
     private static final long COUNT=20;
     private static final String CLIENT_NAME=PrimeClient.class.getName();
@@ -45,7 +45,9 @@ public class PrimeClient {
     }
 
     public static synchronized void processNumberSync(long value, String hostname, int port, Component communication) throws IOException {
-        communication.send(new Message(hostname, port, new Long(value)), false);
+        Message message = new Message(hostname, port, value);
+        communication.send(message, port, true);
+//        communication.send(new Message(hostname, port, new Long(value)), false);
         Boolean isPrime = false;
         Boolean received = false;
         System.out.print(value + ": ");
@@ -67,7 +69,9 @@ public class PrimeClient {
     }
 
     public void processNumber(long value) throws IOException {
-        communication.send(new Message(hostname, port, new Long(value)), false);
+        Message message = new Message(hostname, port, value);
+        communication.send(message, port, true);
+//        communication.send(new Message(hostname, port, new Long(value)), false);
         Boolean isPrime = false;
         Boolean received = false;
         System.out.print(value + ": ");
