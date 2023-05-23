@@ -11,7 +11,7 @@ public class ClientMain {
     private static final boolean MULTI_THREADING = true;
 
     public static void main(String[] args) {
-        for (int i = 1; i < 11; i++) {
+        for (int i = 1; i < 21; i++) {
             PrimeClient primeClient = new PrimeClient("localhost", 9090, 9000 + i, INITIAL_VALUE, COUNT, REQUESTMODE, MULTI_THREADING);
             primeClient.start();
         }

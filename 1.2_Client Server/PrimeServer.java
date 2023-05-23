@@ -25,9 +25,19 @@ public class PrimeServer {
         LOGGER.info("Listening on port " + port);
 
         while (true) {
+            // dynmaisch -
             if (threadCounter < maxThreads) {
+            // dynmaisch -
                 Long request = null;
                 int sendPort = 0;
+
+                // dynmaisch -
+                if (threadCounter < maxThreads-8) {
+                    int newThreads = maxThreads - 8;
+                    System.out.println("Lower threadpool from " + maxThreads + " to " + newThreads + "###########");
+                    maxThreads -=8;
+                }
+                // dynmaisch -
 
                 System.out.println("Receiving ...");
                 try {
@@ -57,9 +67,10 @@ public class PrimeServer {
 //          comment
 
                 primeServiceThread.start();
+            // dynmaisch -
             } else {
                 int newThreads = maxThreads + 8;
-                System.out.println("Raising threadpool from " + maxThreads + " to " + newThreads);
+                System.out.println("Raising threadpool from " + maxThreads + " to " + newThreads + "###########");
                 maxThreads +=8;
                 try {
                     sleep(1000);
@@ -67,6 +78,7 @@ public class PrimeServer {
                     throw new RuntimeException(e);
                 }
             }
+            // dynmaisch -
         }
     }
 
