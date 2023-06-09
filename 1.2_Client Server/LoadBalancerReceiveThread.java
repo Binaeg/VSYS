@@ -7,9 +7,9 @@ import java.io.IOException;
 
 public class LoadBalancerReceiveThread extends Thread{
 
-    private int receivePort;
+    private int serverReceivePort;
 
-    private int sendPort;
+    private int clientSendPort;
 
     private Component communication;
 
@@ -21,13 +21,17 @@ public class LoadBalancerReceiveThread extends Thread{
 
         communication = new Component();
 
-        while(true) {
+        boolean received = false;
+
+        while(!received) {
             try {
-                Message receivedMessage = communication.receive(receivePort, true, false);
+                Message receivedMessage = communication.receive(serverReceivePort, true, false);
                 Response response = (Response) receivedMessage.getContent();
 
                 Message sendMessage = new Message("localhost",0, response);
-                communication.send(sendMessage, sendPort, false);
+                communication.send(sendMessage, clientSendPort, false);
+                received = true;
+                communication.cleanup();
 
                 serverAdmin.release(serverConfig);
 
@@ -37,12 +41,12 @@ public class LoadBalancerReceiveThread extends Thread{
         }
     }
 
-    public int getReceivePort() {
-        return receivePort;
+    public int getServerReceivePort() {
+        return serverReceivePort;
     }
 
-    public int getSendPort() {
-        return sendPort;
+    public int getClientSendPort() {
+        return clientSendPort;
     }
 
     public ServerAdmin getServerAdmin() {
@@ -53,12 +57,12 @@ public class LoadBalancerReceiveThread extends Thread{
         return serverConfig;
     }
 
-    public void setReceivePort(int receivePort) {
-        this.receivePort = receivePort;
+    public void setServerReceivePort(int serverReceivePort) {
+        this.serverReceivePort = serverReceivePort;
     }
 
-    public void setSendPort(int sendPort) {
-        this.sendPort = sendPort;
+    public void setClientSendPort(int clientSendPort) {
+        this.clientSendPort = clientSendPort;
     }
 
     public void setServerAdmin(ServerAdmin serverAdmin) {

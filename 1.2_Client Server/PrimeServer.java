@@ -53,7 +53,7 @@ public class PrimeServer extends Thread{
                 } catch (ClassNotFoundException | IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println((request.toString() + " received on port " + sendPort));
+                System.out.println((request.toString() + " received on port " + port));
 
                 PrimeServiceThread primeServiceThread = new PrimeServiceThread();
                 primeServiceThread.setNumber(request);
