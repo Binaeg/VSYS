@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import rm.requestResponse.*;
 
@@ -22,6 +24,12 @@ public class PrimeClient extends Thread {
     long initialValue, count;
     boolean requestMode;
     boolean multiThreading;
+
+    List<Long> processingTimes = new ArrayList<>();
+
+    List<Long> waitingTimes = new ArrayList<>();
+
+    List<Long> communicationTimes = new ArrayList<>();
 
     public PrimeClient(String hostname, int sendPort, int receivePort, long initialValue, long count, boolean requestMode, boolean multiThreading) {
         this.hostname = hostname;
@@ -45,14 +53,20 @@ public class PrimeClient extends Thread {
     }
 
     public void processNumber(long value) throws IOException {
+        long startTime = System.currentTimeMillis();
         Message message = new Message(hostname, receivePort, value);
         communication.send(message, sendPort, false);
         Boolean isPrime = false;
+        long processingTime = 0;
+        long waitingTime = 0;
+        long communicationTime = 0;
         Boolean received = false;
         while (!received) {
             try {
-                // better: null check -> performance
-                isPrime = (Boolean) communication.receive(receivePort, requestMode, true).getContent();
+                Response response = (Response) communication.receive(receivePort, requestMode, true).getContent();                // better: null check -> performance
+                isPrime = response.isPrime();
+                processingTime = response.getProcessingTime();
+                waitingTime = response.getWaitingTime();
                 received = true;
             } catch (Exception e) {
 //                System.out.print(".");
@@ -63,8 +77,32 @@ public class PrimeClient extends Thread {
                 throw new RuntimeException(e);
             }
         }
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        communicationTime = totalTime - processingTime - waitingTime;
 
-        System.out.println("client" + receivePort + " " + value + ": " + (isPrime.booleanValue() ? " prime" : " not prime"));
+        processingTimes.add(processingTime);
+        waitingTimes.add(waitingTime);
+        communicationTimes.add(communicationTime);
+
+        long avgProcessingTime = averageCalc(processingTimes);
+        long avgWaitingTime = averageCalc(processingTimes);
+        long avgCommunicationTime = averageCalc(processingTimes);
+
+
+
+        System.out.println("client" + receivePort + " " + value + ": " + (isPrime.booleanValue() ? " prime" : " not prime") + " | p: " + processingTime + "(" + avgProcessingTime + ")" + " ms | w: " + waitingTime + "(" + avgWaitingTime + ")" + " ms | c: " + communicationTime +  "(" + avgCommunicationTime + ")" + " ms");
+    }
+
+    public long averageCalc(List<Long> list) {
+        long sum = 0;
+        if(!list.isEmpty()) {
+            for (long mark : list) {
+                sum += mark;
+            }
+            return sum / list.size();
+        }
+        return sum;
     }
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {

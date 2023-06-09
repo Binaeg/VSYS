@@ -12,8 +12,6 @@ public class PrimeServer {
     private Component communication;
     private int port = PORT;
 
-    public static int threadCounter = 0;
-
     public static int maxThreads = 8;
 
     PrimeServer(int port) {
@@ -24,15 +22,18 @@ public class PrimeServer {
     void listen() {
         LOGGER.info("Listening on port " + port);
 
+        CounterThread threadCounter = new CounterThread();
+        threadCounter.start();
+
         while (true) {
             // dynmaisch -
-            if (threadCounter < maxThreads) {
+            if (threadCounter.getThreadCounter() < maxThreads) {
             // dynmaisch -
                 Long request = null;
                 int sendPort = 0;
 
                 // dynmaisch -
-                if (threadCounter < maxThreads-8) {
+                if (threadCounter.getThreadCounter() < maxThreads-8) {
                     int newThreads = maxThreads - 8;
                     System.out.println("Lower threadpool from " + maxThreads + " to " + newThreads + "###########");
                     maxThreads -=8;
@@ -52,8 +53,9 @@ public class PrimeServer {
                 PrimeServiceThread primeServiceThread = new PrimeServiceThread();
                 primeServiceThread.setNumber(request);
                 primeServiceThread.setSendPort(sendPort);
-                threadCounter++;
-                System.out.println("Current amount of threads: " + threadCounter);
+                primeServiceThread.setThreadCounter(threadCounter);
+                threadCounter.incThreadCounter();
+//                System.out.println("Current amount of threads: " + threadCounter.getThreadCounter());
 
 //          comment this in for constant thread pool
 //                while (threadCounter >= 8) {

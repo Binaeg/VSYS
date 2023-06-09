@@ -7,6 +7,8 @@ public class PrimeServiceThread extends Thread{
 
     private long number;
 
+    private CounterThread threadCounter;
+
     private int sendPort;
 
     @Override
@@ -16,8 +18,8 @@ public class PrimeServiceThread extends Thread{
         Component communication = new Component();
         try {
             communication.send(message, sendPort, true);
-            PrimeServer.threadCounter--;
-            System.out.println("Current amount of threads: " + PrimeServer.threadCounter);
+            threadCounter.decThreadCounter();
+//            System.out.println("Current amount of threads: " + threadCounter.getThreadCounter());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -28,6 +30,10 @@ public class PrimeServiceThread extends Thread{
             if (number % i == 0) return false;
         }
         return true;
+    }
+
+    public void setThreadCounter(CounterThread threadCounter) {
+        this.threadCounter = threadCounter;
     }
 
     public void setNumber(long number) {
