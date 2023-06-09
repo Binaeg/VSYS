@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="rm.requestResponse_v12" level="project" />
+    <orderEntry type="library" name="rm.serverAdmin" level="project" />
   </component>
 </module>

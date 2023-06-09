@@ -1,11 +1,13 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.*;
 
 import rm.requestResponse.*;
 
 import static java.lang.Thread.sleep;
 
-public class PrimeServer {
+public class PrimeServer extends Thread{
     private final static int PORT = 9090;
     private final static Logger LOGGER = Logger.getLogger(PrimeServer.class.getName());
 
@@ -88,23 +90,38 @@ public class PrimeServer {
         }
     }
 
-    public static void main(String[] args) {
-        int port = 0;
+    public void run() {
+        listen();
+    }
 
-        for (int i = 0; i < args.length; i++) {
-            switch (args[i]) {
-                case "-port":
-                    try {
-                        port = Integer.parseInt(args[++i]);
-                    } catch (NumberFormatException e) {
-                        LOGGER.severe("port must be an integer, not " + args[i]);
-                        System.exit(1);
-                    }
-                    break;
-                default:
-                    LOGGER.warning("Wrong parameter passed ... '" + args[i] + "'");
-            }
+    public static void main(String[] args) {
+        int port = 9090;
+
+//        for (int i = 0; i < args.length; i++) {
+//            switch (args[i]) {
+//                case "-port":
+//                    try {
+//                        port = Integer.parseInt(args[++i]);
+//                    } catch (NumberFormatException e) {
+//                        LOGGER.severe("port must be an integer, not " + args[i]);
+//                        System.exit(1);
+//                    }
+//                    break;
+//                default:
+//                    LOGGER.warning("Wrong parameter passed ... '" + args[i] + "'");
+//            }
+//        }
+        String input;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.print("port [" + port + "] > ");
+        try {
+            input = reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        if (!input.equals("")) port = Integer.parseInt(input);
+
 
         new PrimeServer(port).listen();
     }
