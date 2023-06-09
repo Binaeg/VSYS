@@ -41,8 +41,11 @@ public class PrimeServer {
                 // dynmaisch -
 
                 System.out.println("Receiving ...");
+
+                long startTime = 0;
                 try {
                     Message receivedMessage = communication.receive(port, true, false);
+                    startTime = System.currentTimeMillis();
                     request = (Long) receivedMessage.getContent();
                     sendPort = receivedMessage.getPort();
                 } catch (ClassNotFoundException | IOException e) {
@@ -54,6 +57,7 @@ public class PrimeServer {
                 primeServiceThread.setNumber(request);
                 primeServiceThread.setSendPort(sendPort);
                 primeServiceThread.setThreadCounter(threadCounter);
+                primeServiceThread.setStartWaitingTime(startTime);
                 threadCounter.incThreadCounter();
 //                System.out.println("Current amount of threads: " + threadCounter.getThreadCounter());
 

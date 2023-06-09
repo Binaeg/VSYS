@@ -15,8 +15,6 @@ public class CounterThread extends Thread {
         this.threadCounter++;
         System.out.println("Current amount of threads: " + threadCounter);
     }
-    public synchronized
-
 
     public synchronized void decThreadCounter() {
         this.threadCounter--;

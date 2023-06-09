@@ -86,8 +86,8 @@ public class PrimeClient extends Thread {
         communicationTimes.add(communicationTime);
 
         long avgProcessingTime = averageCalc(processingTimes);
-        long avgWaitingTime = averageCalc(processingTimes);
-        long avgCommunicationTime = averageCalc(processingTimes);
+        long avgWaitingTime = averageCalc(waitingTimes);
+        long avgCommunicationTime = averageCalc(communicationTimes);
 
 
 

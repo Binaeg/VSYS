@@ -11,10 +11,21 @@ public class PrimeServiceThread extends Thread{
 
     private int sendPort;
 
+    private long startWaitingTime;
+
     @Override
     public void run() {
-        boolean res = primeService(number);
-        Message message = new Message("localhost", sendPort, res);
+        Response response = new Response();
+
+        long startProcessingTime = System.currentTimeMillis();
+        boolean isPrime = primeService(number);
+        long endProcessingTime = System.currentTimeMillis();
+
+
+        response.setPrime(isPrime);
+        response.setProcessingTime(endProcessingTime-startProcessingTime);
+        response.setWaitingTime(startProcessingTime-startWaitingTime);
+        Message message = new Message("localhost", sendPort, response);
         Component communication = new Component();
         try {
             communication.send(message, sendPort, true);
@@ -42,5 +53,9 @@ public class PrimeServiceThread extends Thread{
 
     public void setSendPort(int sendPort) {
         this.sendPort = sendPort;
+    }
+
+    public void setStartWaitingTime(long startWaitingTime) {
+        this.startWaitingTime = startWaitingTime;
     }
 }

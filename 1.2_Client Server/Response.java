@@ -1,4 +1,6 @@
-public class Response {
+import java.io.Serializable;
+
+public class Response implements Serializable {
 
     boolean isPrime;
 
@@ -12,6 +14,9 @@ public class Response {
         this.waitingTime = waitingTime;
     }
 
+    public Response() {
+    }
+
     public boolean isPrime() {
         return isPrime;
     }
@@ -22,5 +27,17 @@ public class Response {
 
     public long getWaitingTime() {
         return waitingTime;
+    }
+
+    public void setPrime(boolean prime) {
+        isPrime = prime;
+    }
+
+    public void setProcessingTime(long processingTime) {
+        this.processingTime = processingTime;
+    }
+
+    public void setWaitingTime(long waitingTime) {
+        this.waitingTime = waitingTime;
     }
 }
