@@ -11,7 +11,8 @@ public class LoadBalancer {
 
     static int port = 3000;
 
-    private static Component communication;
+    private static Component receiveCommunication;
+    private static Component sendCommunication;
 
     public static void main(String[] args) throws IOException {
 
@@ -20,7 +21,8 @@ public class LoadBalancer {
         ServerAdmin server = new ServerAdmin(simon);
 
 
-        communication = new Component();
+        receiveCommunication = new Component();
+        sendCommunication = new Component();
 
         while (true) {
             Long request = null;
@@ -30,7 +32,7 @@ public class LoadBalancer {
 
             try {
                 //receive message from client
-                Message receivedMessage = communication.receive(port, true, false);
+                Message receivedMessage = receiveCommunication.receive(port, true, false);
                 request = (Long) receivedMessage.getContent();
                 sendPort = receivedMessage.getPort();
                 System.out.println((request.toString() + " received on port " + port));
@@ -40,8 +42,8 @@ public class LoadBalancer {
 
                 //send message to free server configuration
                 Message sendMessage = new Message(serverConfig.getHostname(), serverConfig.getReceivePort(), request);
-                communication.send(sendMessage, serverConfig.getSendPort(), false);
-                communication.cleanup();
+                sendCommunication.send(sendMessage, serverConfig.getSendPort(), false);
+                sendCommunication.cleanup();
 
                 //start new thread waiting for the response
                 LoadBalancerReceiveThread receiveThread = new LoadBalancerReceiveThread();
