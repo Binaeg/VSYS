@@ -18,7 +18,7 @@ public class LoadBalancer {
 
         String timm = "/home/timm/studium/vsys/Git/VSYS2/VSYS/1.2_Client Server/config.txt";
         String simon = "D:\\GitHub\\VSYS\\1.2_Client Server\\config.txt";
-        ServerAdmin server = new ServerAdmin(simon);
+        ServerAdmin server = new ServerAdmin(timm);
 
 
         receiveCommunication = new Component();

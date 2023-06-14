@@ -31,12 +31,17 @@ public class LoadBalancerReceiveThread extends Thread{
                 Message sendMessage = new Message("localhost",0, response);
                 communication.send(sendMessage, clientSendPort, false);
                 received = true;
-                communication.cleanup();
-
-                serverAdmin.release(serverConfig);
 
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    communication.cleanup();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                serverAdmin.release(serverConfig);
             }
         }
     }
