@@ -1,11 +1,15 @@
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.*;
 
 import rm.requestResponse.*;
 
 import static java.lang.Thread.sleep;
 
-public class PrimeServer {
+public class PrimeServer implements RmiPrimeServerInterface {
     private final static int PORT = 9090;
     private final static Logger LOGGER = Logger.getLogger(PrimeServer.class.getName());
 
@@ -16,8 +20,9 @@ public class PrimeServer {
 
     public static int maxThreads = 8;
 
+    private static PrimeServer server;
+
     PrimeServer(int port) {
-        communication = new Component();
         if (port > 0) this.port = port;
     }
 
@@ -82,24 +87,48 @@ public class PrimeServer {
         }
     }
 
-    public static void main(String[] args) {
-        int port = 0;
+    public static void main(String[] args) throws RemoteException {
 
-        for (int i = 0; i < args.length; i++) {
-            switch (args[i]) {
-                case "-port":
-                    try {
-                        port = Integer.parseInt(args[++i]);
-                    } catch (NumberFormatException e) {
-                        LOGGER.severe("port must be an integer, not " + args[i]);
-                        System.exit(1);
-                    }
-                    break;
-                default:
-                    LOGGER.warning("Wrong parameter passed ... '" + args[i] + "'");
-            }
+
+        server = new PrimeServer(PORT);
+
+        server.start(PORT);
+
+
+//        int port = 0;
+//
+//        for (int i = 0; i < args.length; i++) {
+//            switch (args[i]) {
+//                case "-port":
+//                    try {
+//                        port = Integer.parseInt(args[++i]);
+//                    } catch (NumberFormatException e) {
+//                        LOGGER.severe("port must be an integer, not " + args[i]);
+//                        System.exit(1);
+//                    }
+//                    break;
+//                default:
+//                    LOGGER.warning("Wrong parameter passed ... '" + args[i] + "'");
+//            }
+//        }
+//
+//        new PrimeServer(port).listen();
+    }
+
+    @Override
+    public boolean isPrim(long candidate) throws RemoteException {
+        for (long i = 2; i < Math.sqrt(candidate)+1; i++) {
+            if (candidate % i == 0) return false;
         }
+        return true;
+    }
 
-        new PrimeServer(port).listen();
+    public void start(int port) throws RemoteException {
+        System.out.println("Primeserver started on port " + PORT);
+
+        RmiPrimeServerInterface serverStub = (RmiPrimeServerInterface) java.rmi.server.UnicastRemoteObject.exportObject(server,0);
+
+        Registry registry= LocateRegistry.createRegistry(PORT);
+        registry.rebind("PrimeServer", serverStub);
     }
 }

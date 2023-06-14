@@ -1,6 +1,10 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 import rm.requestResponse.*;
 
@@ -40,34 +44,47 @@ public class PrimeClient extends Thread {
                 processNumber(i);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void processNumber(long value) throws IOException {
-        Message message = new Message(hostname, receivePort, value);
-        communication.send(message, sendPort, false);
-        Boolean isPrime = false;
-        Boolean received = false;
-        while (!received) {
-            try {
-                // better: null check -> performance
-                isPrime = (Boolean) communication.receive(receivePort, requestMode, true).getContent();
-                received = true;
-            } catch (Exception e) {
-//                System.out.print(".");
-            }
-            try {
-                sleep(250);
-            } catch (InterruptedException e) {
+            } catch (NotBoundException e) {
                 throw new RuntimeException(e);
             }
         }
-
-        System.out.println("client" + receivePort + " " + value + ": " + (isPrime.booleanValue() ? " prime" : " not prime"));
     }
 
-    public static void main(String args[]) throws IOException, ClassNotFoundException {
+    public void processNumber(long value) throws IOException, NotBoundException {
+
+        Registry registry= LocateRegistry.getRegistry(hostname, PORT);
+
+        RmiPrimeServerInterface server = (RmiPrimeServerInterface)registry.lookup("PrimeServer");
+
+        boolean isPrime = server.isPrim(value);
+
+
+
+
+
+//        Message message = new Message(hostname, receivePort, value);
+//        communication.send(message, sendPort, false);
+//        Boolean isPrime = false;
+//        Boolean received = false;
+//        while (!received) {
+//            try {
+//                // better: null check -> performance
+//                isPrime = (Boolean) communication.receive(receivePort, requestMode, true).getContent();
+//                received = true;
+//            } catch (Exception e) {
+////                System.out.print(".");
+//            }
+//            try {
+//                sleep(250);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
+        System.out.println("client" + " " + value + ": " + (isPrime ? " prime" : " not prime"));
+    }
+
+    public static void main(String args[]) throws IOException, RemoteException, NotBoundException {
         String hostname = HOSTNAME;
         int port = PORT;
         long initialValue = INITIAL_VALUE;
