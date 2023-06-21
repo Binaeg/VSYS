@@ -9,7 +9,7 @@ public class PrimeServer implements BasicListener {
     private final static int PORT = 1234;
     private final static Logger LOGGER = Logger.getLogger(PrimeServer.class.getName());
 
-//    private Component communication;
+    //    private Component communication;
     private static BasicServer basicServer;
     private RmiClientConnection connection;
     private int port = PORT;
@@ -35,7 +35,7 @@ public class PrimeServer implements BasicListener {
         while (true) {
             // dynmaisch -
             if (threadCounter < maxThreads) {
-            // dynmaisch -
+                // dynmaisch -
                 Long request = null;
                 int sendPort = 0;
 
@@ -72,7 +72,7 @@ public class PrimeServer implements BasicListener {
 //          comment
 
                 primeServiceThread.start();
-            // dynmaisch -
+                // dynmaisch -
             } else {
                 int newThreads = maxThreads + 8;
                 System.out.println("Raising threadpool from " + maxThreads + " to " + newThreads + "###########");

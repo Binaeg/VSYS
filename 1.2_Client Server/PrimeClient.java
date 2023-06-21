@@ -16,7 +16,7 @@ public class PrimeClient extends Thread {
 
     private static final boolean MULTI_THREADING = true;
 
-//    private Component communication;
+    //    private Component communication;
     private RmiClient rmiClient;
 
     String hostname;
