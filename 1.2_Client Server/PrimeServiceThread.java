@@ -3,28 +3,35 @@ import rm.requestResponse.Message;
 
 import java.io.IOException;
 
-public class PrimeServiceThread extends Thread{
+public class PrimeServiceThread extends Thread {
 
     private long number;
 
     private int sendPort;
 
+    private BasicConnection connection;
+
+    public BasicConnection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(BasicConnection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public void run() {
         boolean res = primeService(number);
-        Message message = new Message("localhost", sendPort, res);
-        Component communication = new Component();
-        try {
-            communication.send(message, sendPort, true);
-            PrimeServer.threadCounter--;
-            System.out.println("Current amount of threads: " + PrimeServer.threadCounter);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        Message message = new Message("localhost", sendPort, res);
+//        Component communication = new Component();
+//            communication.send(message, sendPort, true);
+        connection.sendMessage(String.valueOf(res));
+        PrimeServer.threadCounter--;
+        System.out.println("Current amount of threads: " + PrimeServer.threadCounter);
     }
 
     private boolean primeService(long number) {
-        for (long i = 2; i < Math.sqrt(number)+1; i++) {
+        for (long i = 2; i < Math.sqrt(number) + 1; i++) {
             if (number % i == 0) return false;
         }
         return true;

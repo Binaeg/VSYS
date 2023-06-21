@@ -5,21 +5,29 @@ import rm.requestResponse.*;
 
 import static java.lang.Thread.sleep;
 
-public class PrimeServer {
-    private final static int PORT = 9090;
+public class PrimeServer implements BasicListener {
+    private final static int PORT = 1234;
     private final static Logger LOGGER = Logger.getLogger(PrimeServer.class.getName());
 
-    private Component communication;
+//    private Component communication;
+    private static BasicServer basicServer;
+    private RmiClientConnection connection;
     private int port = PORT;
 
     public static int threadCounter = 0;
 
     public static int maxThreads = 8;
 
-    PrimeServer(int port) {
-        communication = new Component();
+    PrimeServer(BasicServer server) {
+//        communication = new Component();
+
+        basicServer = server;
+        basicServer.setListener(this);
+
         if (port > 0) this.port = port;
     }
+
+
 
     void listen() {
         LOGGER.info("Listening on port " + port);
@@ -40,13 +48,10 @@ public class PrimeServer {
                 // dynmaisch -
 
                 System.out.println("Receiving ...");
-                try {
-                    Message receivedMessage = communication.receive(port, true, false);
-                    request = (Long) receivedMessage.getContent();
-                    sendPort = receivedMessage.getPort();
-                } catch (ClassNotFoundException | IOException e) {
-                    e.printStackTrace();
-                }
+                //                    Message receivedMessage = communication.receive(port, true, false);
+                request = Long.getLong(connection.receiveMessage());
+//                    request = (Long) receivedMessage.getContent();
+//                    sendPort = receivedMessage.getPort();
                 System.out.println((request.toString() + " received on port " + sendPort));
 
                 PrimeServiceThread primeServiceThread = new PrimeServiceThread();
@@ -100,6 +105,18 @@ public class PrimeServer {
             }
         }
 
-        new PrimeServer(port).listen();
+        BasicServer server = new RmiServer();
+        server.waitForConnection(PORT, new PrimeServer(server));
+
+    }
+
+    @Override
+    public void connectionAccepted(BasicConnection connection) {
+
+        Long request = Long.parseLong(connection.receiveMessage());
+        PrimeServiceThread primeServiceThread = new PrimeServiceThread();
+        primeServiceThread.setNumber(request);
+        primeServiceThread.setConnection(connection);
+        primeServiceThread.start();
     }
 }

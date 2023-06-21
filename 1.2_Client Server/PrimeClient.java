@@ -8,7 +8,7 @@ import static java.lang.Thread.sleep;
 
 public class PrimeClient extends Thread {
     private static final String HOSTNAME = "localhost";
-    private static final int PORT = 9090;
+    private static final int PORT = 1234;
     private static final long INITIAL_VALUE = (long) 1e17;
     private static final long COUNT = 20;
     private static final String CLIENT_NAME = PrimeClient.class.getName();
@@ -16,7 +16,9 @@ public class PrimeClient extends Thread {
 
     private static final boolean MULTI_THREADING = true;
 
-    private Component communication;
+//    private Component communication;
+    private RmiClient rmiClient;
+
     String hostname;
     int sendPort, receivePort;
     long initialValue, count;
@@ -34,9 +36,11 @@ public class PrimeClient extends Thread {
     }
 
     public void run() {
-        communication = new Component();
+//        communication = new Component();
         for (long i = initialValue; i < initialValue + count; i++) {
             try {
+                this.rmiClient = new RmiClient();
+                rmiClient.connect(PORT, hostname);
                 processNumber(i);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -46,13 +50,15 @@ public class PrimeClient extends Thread {
 
     public void processNumber(long value) throws IOException {
         Message message = new Message(hostname, receivePort, value);
-        communication.send(message, sendPort, false);
+//        communication.send(message, sendPort, false);
+        rmiClient.sendMessage(String.valueOf(value));
         Boolean isPrime = false;
         Boolean received = false;
         while (!received) {
             try {
                 // better: null check -> performance
-                isPrime = (Boolean) communication.receive(receivePort, requestMode, true).getContent();
+//                isPrime = (Boolean) communication.receive(receivePort, requestMode, true).getContent();
+                isPrime = Boolean.parseBoolean(rmiClient.receiveMessage());
                 received = true;
             } catch (Exception e) {
 //                System.out.print(".");
