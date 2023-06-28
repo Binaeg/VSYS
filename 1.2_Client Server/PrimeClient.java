@@ -40,7 +40,7 @@ public class PrimeClient extends Thread {
         for (long i = initialValue; i < initialValue + count; i++) {
             try {
                 this.rmiClient = new RmiClient();
-                rmiClient.connect(PORT, hostname);
+//                rmiClient.connect(PORT, hostname);
                 processNumber(i);
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -30,6 +30,7 @@ public class RmiClient implements BasicClient{
     }
 
     public void sendMessage(String text) {
+        connect(1234, "localhost");
         try {
             incomingMessage = connection.message(text);
         } catch (RemoteException e) {

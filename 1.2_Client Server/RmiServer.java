@@ -5,20 +5,32 @@ import java.rmi.registry.Registry;
 
 public class RmiServer implements BasicServer {
 
-    private Remote clientListenerStub;
-    private int port;
+    private int port = 1234;
     private int connectionCount;
 
-    private BasicListener listener;
+    private ServerListener listener;
+
+    public RmiServer() {
+        this.listener = new ServerListener(this);
+        waitForConnection(port);
+    }
+
+    public String receiveMessage() {
+        return this.listener.receiveMessage();
+    }
+
+    public void sendMessage(String message) {
+        this.listener.sendMessage(message);
+    }
 
     @Override
-    public void waitForConnection(int port, PrimeServer listener) {
+    public void waitForConnection(int port) {
         this.port = port;
 
         try {
             RmiClientListener clientListener = new RmiClientListener(this.listener);
 
-            clientListenerStub = (BasicClientListener) java.rmi.server.UnicastRemoteObject.exportObject(clientListener, 0);
+            Remote clientListenerStub = (BasicClientListener) java.rmi.server.UnicastRemoteObject.exportObject(clientListener, 0);
             Registry registry = LocateRegistry.createRegistry(port);
             registry.rebind("clientListener", clientListenerStub);
         } catch (RemoteException e) {
@@ -36,7 +48,6 @@ public class RmiServer implements BasicServer {
 
     @Override
     public void setListener(BasicListener listener) {
-//        clientListener.setListener(listener);
-        this.listener = listener;
+        this.listener = (ServerListener) listener;
     }
 }

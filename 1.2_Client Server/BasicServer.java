@@ -1,4 +1,4 @@
 public interface BasicServer {
-    void waitForConnection(int port, PrimeServer listener);
+    void waitForConnection(int port);
     void setListener(BasicListener listener);
 }

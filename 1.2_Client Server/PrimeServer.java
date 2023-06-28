@@ -5,7 +5,7 @@ import rm.requestResponse.*;
 
 import static java.lang.Thread.sleep;
 
-public class PrimeServer implements BasicListener {
+public class PrimeServer {
     private final static int PORT = 1234;
     private final static Logger LOGGER = Logger.getLogger(PrimeServer.class.getName());
 
@@ -21,10 +21,10 @@ public class PrimeServer implements BasicListener {
     PrimeServer(BasicServer server) {
 //        communication = new Component();
 
-        basicServer = server;
-        basicServer.setListener(this);
+//        basicServer = server;
+//        basicServer.setListener(this);
 
-        if (port > 0) this.port = port;
+//        if (port > 0) this.port = port;
     }
 
 
@@ -105,18 +105,27 @@ public class PrimeServer implements BasicListener {
             }
         }
 
-        BasicServer server = new RmiServer();
-        server.waitForConnection(PORT, new PrimeServer(server));
+        var rmiServer = new RmiServer();
 
-    }
+        String message = rmiServer.receiveMessage();
+        System.out.println(message + "received");
 
-    @Override
-    public void connectionAccepted(BasicConnection connection) {
-
-        Long request = Long.parseLong(connection.receiveMessage());
+        Long request = Long.parseLong(message);
         PrimeServiceThread primeServiceThread = new PrimeServiceThread();
         primeServiceThread.setNumber(request);
-        primeServiceThread.setConnection(connection);
+        primeServiceThread.setRmiServer(rmiServer);
         primeServiceThread.start();
+//        server.waitForConnection(PORT, new PrimeServer(server));
+
     }
+
+//    @Override
+//    public void connectionAccepted(BasicConnection connection) {
+//
+//        Long request = Long.parseLong(connection.receiveMessage());
+//        PrimeServiceThread primeServiceThread = new PrimeServiceThread();
+//        primeServiceThread.setNumber(request);
+//        primeServiceThread.setConnection(connection);
+//        primeServiceThread.start();
+//    }
 }

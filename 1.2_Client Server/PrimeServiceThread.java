@@ -11,6 +11,8 @@ public class PrimeServiceThread extends Thread {
 
     private BasicConnection connection;
 
+    private RmiServer rmiServer;
+
     public BasicConnection getConnection() {
         return connection;
     }
@@ -25,9 +27,9 @@ public class PrimeServiceThread extends Thread {
 //        Message message = new Message("localhost", sendPort, res);
 //        Component communication = new Component();
 //            communication.send(message, sendPort, true);
-        connection.sendMessage(String.valueOf(res));
+        rmiServer.sendMessage(String.valueOf(res));
         PrimeServer.threadCounter--;
-        System.out.println("Current amount of threads: " + PrimeServer.threadCounter);
+//        System.out.println("Current amount of threads: " + PrimeServer.threadCounter);
     }
 
     private boolean primeService(long number) {
@@ -43,5 +45,9 @@ public class PrimeServiceThread extends Thread {
 
     public void setSendPort(int sendPort) {
         this.sendPort = sendPort;
+    }
+
+    public void setRmiServer(RmiServer rmiServer) {
+        this.rmiServer = rmiServer;
     }
 }
